@@ -17,4 +17,10 @@ class TeacherPost extends Model
     {
         return $this->belongsTo(Teacher::class);
     }
+
+    
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
+    }
 }

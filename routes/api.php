@@ -43,6 +43,8 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::group(['prefix' => 'student', 'middleware' => ['auth:sanctum', 'student']], function () {
 
+    Route::get('showPosts',[AcademyStudentController::class,'showPosts']);
+    
     Route::group(['prefix' => 'profile'], function () {
         //done
         Route::get('/', [ProfileStudentController::class, 'show']);

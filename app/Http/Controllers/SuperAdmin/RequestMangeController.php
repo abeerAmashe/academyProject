@@ -20,7 +20,7 @@ class RequestMangeController extends Controller
             'name' => $academyPending->name,
             'description' => $academyPending->description,
             'location' => $academyPending->location,
-            'photo' => $academyPending->photo,
+            'image' => $academyPending->photo,
             'english' => $academyPending->english,
             'french' => $academyPending->french,
             'spanish' => $academyPending->spanish,

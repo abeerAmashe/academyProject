@@ -12,6 +12,7 @@ use App\Models\FeedBack;
 use App\Models\RateTeacher;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\TeacherPost;
 use Carbon\Carbon;
 use Database\Seeders\AcademySeeder;
 
@@ -19,7 +20,7 @@ use function PHPUnit\Framework\returnSelf;
 
 class AcademyStudentController extends Controller
 {
-	
+
 	public function index()
 	{
 		$student =  Student::where('user_id', auth()->id())->first();
@@ -131,7 +132,7 @@ class AcademyStudentController extends Controller
 				'message' => 'Student not found.'
 			]);
 		}
-		
+
 		$student->academies()->detach($academy->id);
 
 		return response()->json([
@@ -200,36 +201,36 @@ class AcademyStudentController extends Controller
 	// }
 
 	public function academySearch(Request $request)
-{
-    $request->validate([
-        'search_key' => 'required|string'
-    ]);
+	{
+		$request->validate([
+			'search_key' => 'required|string'
+		]);
 
-    $searchKey = $request->search_key;
+		$searchKey = $request->search_key;
 
-    $academiesByName = Academy::where('name', 'like', "%{$searchKey}%")->get();
+		$academiesByName = Academy::where('name', 'like', "%{$searchKey}%")->get();
 
-    $academiesByLocation = Academy::where('location', 'like', "%{$searchKey}%")->get();
+		$academiesByLocation = Academy::where('location', 'like', "%{$searchKey}%")->get();
 
-    $languages = ['english', 'french', 'spanish', 'germany'];
-    if (in_array(strtolower($searchKey), $languages)) {
-        $academiesByLang = Academy::where(strtolower($searchKey), true)->get();
-    } else {
-        $academiesByLang = collect([]); 
-    }
+		$languages = ['english', 'french', 'spanish', 'germany'];
+		if (in_array(strtolower($searchKey), $languages)) {
+			$academiesByLang = Academy::where(strtolower($searchKey), true)->get();
+		} else {
+			$academiesByLang = collect([]);
+		}
 
-    $finalData = $academiesByName
-        ->merge($academiesByLocation)
-        ->merge($academiesByLang)
-        ->unique('id')
-        ->values();
+		$finalData = $academiesByName
+			->merge($academiesByLocation)
+			->merge($academiesByLang)
+			->unique('id')
+			->values();
 
-    return response()->json([
-        'status' => 200,
-        'message' => 'done successfully',
-        'data' => $finalData
-    ]);
-}
+		return response()->json([
+			'status' => 200,
+			'message' => 'done successfully',
+			'data' => $finalData
+		]);
+	}
 
 	public function academy(Academy $academy)
 	{
@@ -255,5 +256,26 @@ class AcademyStudentController extends Controller
 			'message' => 'done',
 			'data' => $academy
 		]);
+	}
+
+
+	public function showPosts()
+	{
+		$student = auth()->user()->students->first();
+
+		if (!$student) {
+			return response()->json([
+				'message' => 'هذا المستخدم ليس طالباً',
+			], 404);
+		}
+
+		$academyIds = $student->academies()->pluck('academies.id');
+
+		$posts = TeacherPost::whereHas('teacher.academies', function ($query) use ($academyIds) {
+			$query->whereIn('academies.id', $academyIds);
+		})->paginate(10);
+
+		// إذا بدك البوستات فقط
+		return response()->json($posts->items());
 	}
 }
