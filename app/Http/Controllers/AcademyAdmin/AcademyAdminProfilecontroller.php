@@ -17,6 +17,7 @@ class AcademyAdminProfilecontroller extends Controller
         return $admin ; 
     }
     public function update(Request $request){
+	
         $validatedData = $request->validate([
 	        'first_name' => 'nullable|string|max:255',
 			'last_name'=>'nullable|max:20' ,

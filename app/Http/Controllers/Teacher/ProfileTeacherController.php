@@ -62,34 +62,6 @@ class ProfileTeacherController extends Controller
 	}
 
 
-	//Update a student's profile
-	// public function update(Request $request)
-	// {
-	// 	$validatedData = $request->validate([
-	// 		'first_name'   => 'nullable|string|max:255',
-	// 		'last_name'    => 'nullable|string|max:255',
-	// 		'phone_number' => 'nullable|string|max:20',
-	// 		'photo'        => 'nullable|image|max:2048',
-	// 	]);
-
-	// 	$teacher = Teacher::where('user_id', auth()->id())->first();
-
-	// 	if (!$teacher) {
-	// 		return response()->json([
-	// 			'status' => 404,
-	// 			'message' => 'Teacher not found.',
-	// 		]);
-	// 	}
-
-	// 	$teacher->update($validatedData);
-
-	// 	return response()->json([
-	// 		'status' => 200,
-	// 		'message' => 'Profile updated successfully',
-	// 		'teacher' => $teacher,
-	// 	]);
-	// }
-
 	public function update(Request $request)
 	{
 		$validatedData = $request->validate([
@@ -98,9 +70,7 @@ class ProfileTeacherController extends Controller
 			'phone_number' => 'nullable|string|max:20',
 			'photo'        => 'nullable|image|max:2048',
 		]);
-
 		$teacher = Teacher::where('user_id', auth()->id())->first();
-
 		if (!$teacher) {
 			return response()->json([
 				'status'  => 404,
@@ -109,13 +79,15 @@ class ProfileTeacherController extends Controller
 		}
 
 		if ($request->hasFile('photo')) {
-			if ($teacher->photo && str_contains($teacher->photo, 'storage/teachers/')) {
-				$oldPath = str_replace(asset('storage') . '/', '', $teacher->photo);
-				Storage::disk('public')->delete($oldPath);
+			if ($teacher->photo) {
+				$oldPath = str_replace('/storage/', '', $teacher->photo);
+				if (Storage::disk('public')->exists($oldPath)) {
+					Storage::disk('public')->delete($oldPath);
+				}
 			}
 
 			$path = $request->file('photo')->store('teachers', 'public');
-			$validatedData['photo'] = '/storage/' . $path;
+			$validatedData['photo'] = Storage::url($path);
 		}
 
 		$teacher->update($validatedData);
@@ -126,7 +98,6 @@ class ProfileTeacherController extends Controller
 			'teacher' => $teacher,
 		], 200);
 	}
-
 
 
 	// public function uploadPost(Request $request)

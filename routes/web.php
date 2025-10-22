@@ -28,11 +28,11 @@ Route::get('/h', function () {
 });
 
 Route::view('essa', 'index');
-Route::get('/h', [zeen::class, 'dan']);
-Route::post('/h/{id}', [zeen::class, 'show']);
+// Route::get('/h', [zeen::class, 'dan']);
+// Route::post('/h/{id}', [zeen::class, 'show']);
 
-Route::get('/user', [zeen::class, 'checkUserName']);
-Route::get('/capital', [zeen::class, 'capatilize']);
-Route::get('/getpersons', [zeen::class, 'getPersons']);
-Route::post('postproudect/{id}', [zeen::class, 'creatProudect']);
-Route::post('update/{id}', [zeen::class, 'updateProductById']);
+// Route::get('/user', [zeen::class, 'checkUserName']);
+// Route::get('/capital', [zeen::class, 'capatilize']);
+// Route::get('/getpersons', [zeen::class, 'getPersons']);
+// Route::post('postproudect/{id}', [zeen::class, 'creatProudect']);
+// Route::post('update/{id}', [zeen::class, 'updateProductById']);
