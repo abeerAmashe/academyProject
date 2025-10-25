@@ -49,31 +49,60 @@ class AcademyStudentController extends Controller
 		return $respnose;
 	}
 
+	// public function joinToAcademy(Request $request, Academy $academy)
+	// {
+	// 	$request->validate([
+	// 		'language' => 'nullable'
+	// 	]);
+
+	// 	$student = Student::where('user_id', auth()->id())->first();
+	// 	if ($student->academies()->wherePivot('academy_id', $academy['id'])->wherePivot('approved', false)->exists()) {
+	// 		return response()->json([
+	// 			'status' => false,
+	// 			'message' => 'you are already add join request to this academy'
+	// 		]);
+	// 	}
+	// 	$student->academies()->attach($academy, [
+	// 		'created_at' => now(),
+	// 		'updated_at' => now(),
+	// 		'enroll_date' => now()
+	// 	]);
+
+	// 	$response = response()->json([
+	// 		'status' => 200,
+	// 		'message' => 'done successfully',
+	// 	]);
+	// 	return $response;
+	// }
 	public function joinToAcademy(Request $request, Academy $academy)
-	{
-		$request->validate([
-			'language' => 'nullable'
-		]);
+{
+    $request->validate([
+        'language' => 'nullable'
+    ]);
 
-		$student = Student::where('user_id', auth()->id())->first();
-		if ($student->academies()->wherePivot('academy_id', $academy['id'])->wherePivot('approved', false)->exists()) {
-			return response()->json([
-				'status' => false,
-				'message' => 'you are already add join request to this academy'
-			]);
-		}
-		$student->academies()->attach($academy, [
-			'created_at' => now(),
-			'updated_at' => now(),
-			'enroll_date' => now()
-		]);
+    $student = Student::where('user_id', auth()->id())->first();
 
-		$response = response()->json([
-			'status' => 200,
-			'message' => 'done successfully',
-		]);
-		return $response;
-	}
+    // Check if the student is already joined to this academy
+    if ($student->academies()->wherePivot('academy_id', $academy->id)->exists()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You have already joined this academy'
+        ]);
+    }
+
+    // Add the student to the academy if not already joined
+    $student->academies()->attach($academy, [
+        'created_at' => now(),
+        'updated_at' => now(),
+        'enroll_date' => now()
+    ]);
+
+    return response()->json([
+        'status' => 200,
+        'message' => 'Successfully joined the academy',
+    ]);
+}
+
 	// public function showRequest(){
 	// 	$student_id = Student::where('user_id' , auth()->id())->first()['id'];
 	// 	$requests = AcademyStudent::where('student_id' , $student_id)->get();

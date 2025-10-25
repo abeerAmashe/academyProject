@@ -86,6 +86,7 @@ class AcademyAdminCourseController extends Controller
 		$academyAdmin = $admin->academyAdmin()->first();
 		$academy = $academyAdmin->academy()->first(); 
 		$academy_id = $academy->id;
+		$validated['academy_id'] = $academy_id;
 		if ($request->hasFile('course_image')) {
 			$path = $request->file('course_image')->store('courses', 'public');
 			$validated['course_image'] = '/storage/' . $path;
