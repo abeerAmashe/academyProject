@@ -13,9 +13,30 @@ use Illuminate\Http\Request;
 class AcademyAdminCourseController extends Controller
 {
 
+	public function getMyCourses()
+	{
+		$user = auth()->user();
+
+		$admin = $user->academyAdmin->first();
+
+		if (!$admin) {
+			return response()->json(['status' => false, 'message' => 'Academy admin not found']);
+		}
+
+		$academyIds = $admin->academy()->pluck('id'); // كل معاهد المدير
+
+		$courses = \App\Models\Course::whereIn('academy_id', $academyIds)->get();
+
+		return response()->json([
+			'status' => true,
+			'data' => $courses
+		]);
+	}
+
+
+
 	public function get_course_student(Course $course)
 	{
-		// جلب الطلاب المرتبطين فقط مع تحديد جدول students لتجنب التعارض
 		$students = $course->students()
 			->get([
 				'students.id',
@@ -57,13 +78,14 @@ class AcademyAdminCourseController extends Controller
 			'hasExam' => 'nullable|boolean',
 			'start_time' => 'required|date',
 			'end_time' => 'required|date|after_or_equal:start_time',
-			'academy_id' => 'required|exists:academies,id',
-			'teacher_id' => 'required|exists:teachers,id', // ✅ إضافة teacher_id
+			'teacher_id' => 'required|exists:teachers,id',
 
 		]);
 
-		$validated['active'] = true;
-
+		$admin = auth()->user(); 
+		$academyAdmin = $admin->academyAdmin()->first();
+		$academy = $academyAdmin->academy()->first(); 
+		$academy_id = $academy->id;
 		if ($request->hasFile('course_image')) {
 			$path = $request->file('course_image')->store('courses', 'public');
 			$validated['course_image'] = '/storage/' . $path;

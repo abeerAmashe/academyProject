@@ -21,60 +21,60 @@ class CourseStudentController extends Controller
 {
 
 	public function join_to_course(Request $request, Course $course)
-{
-    $student = auth()->user()->students->first();
-    if (!$student) {
-        return response()->json([
-            'status' => 404,
-            'message' => 'Student not found'
-        ], 404);
-    }
-    $enrolledCount = $course->students()->count();
-    if ($enrolledCount >= $course->seats) {
-        return response()->json([
-            'status' => 400,
-            'message' => 'Sorry, no seats available for this course'
-        ], 400);
-    }
-    if ($course->students()->where('student_id', $student->id)->exists()) {
-        return response()->json([
-            'status' => 400,
-            'message' => 'Student already enrolled in this course'
-        ], 400);
-    }
+	{
+		$student = auth()->user()->students->first();
+		if (!$student) {
+			return response()->json([
+				'status' => 404,
+				'message' => 'Student not found'
+			], 404);
+		}
+		$enrolledCount = $course->students()->count();
+		if ($enrolledCount >= $course->seats) {
+			return response()->json([
+				'status' => 400,
+				'message' => 'Sorry, no seats available for this course'
+			], 400);
+		}
+		if ($course->students()->where('student_id', $student->id)->exists()) {
+			return response()->json([
+				'status' => 400,
+				'message' => 'Student already enrolled in this course'
+			], 400);
+		}
 
-    $course->students()->attach($student->id, [        
-        'marks'    => 0,
-        // 'rating'   => 0.0
-    ]);
+		$course->students()->attach($student->id, [
+			'marks'    => 0,
+			// 'rating'   => 0.0
+		]);
 
-    return response()->json([
-        'status' => 200,
-        'message' => 'Student successfully joined the course',
-        'course_id' => $course->id,
-        'student_id' => $student->id
-    ]);
-}
+		return response()->json([
+			'status' => 200,
+			'message' => 'Student successfully joined the course',
+			'course_id' => $course->id,
+			'student_id' => $student->id
+		]);
+	}
 
 	public function showCourses()
-{
-    $student = auth()->user()->students->first(); // جلب الطالب من اليوزر الحالي
+	{
+		$student = auth()->user()->students->first(); // جلب الطالب من اليوزر الحالي
 
-    if (!$student) {
-        return response()->json([
-            'message' => 'Student not found'
-        ], 404);
-    }
+		if (!$student) {
+			return response()->json([
+				'message' => 'Student not found'
+			], 404);
+		}
 
-    $courses = $student->courses()
-        ->with('teacher')
-        ->get();
+		$courses = $student->courses()
+			->with('teacher')
+			->get();
 
-    return response()->json([
-        'status' => 200,
-        'courses' => $courses
-    ]);
-}
+		return response()->json([
+			'status' => 200,
+			'courses' => $courses
+		]);
+	}
 
 	public function index() {}
 	//book a specific course
@@ -197,7 +197,7 @@ class CourseStudentController extends Controller
 
 	public function showExam(Course $course)
 	{
-		$exams = $course->exams()->with('questions')->first();
+		$exams = $course->exams()->with('questions')->orderBy('created_at', 'desc')->first();
 
 		return response()->json([
 			'status' => true,

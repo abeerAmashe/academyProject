@@ -39,12 +39,13 @@ Route::post('teacher/register', [AuthTeacherController::class, 'register']);
 Route::post('academy-admin/register', [AuthAcademyController::class, 'register']);
 //taked
 Route::post('/login', [LoginController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/logout', [LoginController::class, 'logout']);
 
 
 Route::group(['prefix' => 'student', 'middleware' => ['auth:sanctum', 'student']], function () {
 
-    Route::get('showPosts',[AcademyStudentController::class,'showPosts']);
-    
+    Route::get('showPosts', [AcademyStudentController::class, 'showPosts']);
+
     Route::group(['prefix' => 'profile'], function () {
         //done
         Route::get('/', [ProfileStudentController::class, 'show']);
@@ -153,7 +154,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['auth:sanctum', 'teacher']
     });
 
     Route::group(['prefix' => 'courses'], function () {
-        
+
         Route::get('/get_course_student/{course}', [CourseTeacherController::class, 'get_course_student']);
         //request(newApi)
         Route::post('/addExam/{course}', [CourseTeacherController::class, 'addExam']);
@@ -185,7 +186,6 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['auth:sanctum', 'teacher']
     });
 });
 
-
 Route::group(['prefix' => 'academy-admin', 'middleware' => ['auth:sanctum', 'academyAdmin']], function () {
 
     Route::group(['prefix' => 'profile'], function () {
@@ -210,6 +210,8 @@ Route::group(['prefix' => 'academy-admin', 'middleware' => ['auth:sanctum', 'aca
         Route::post('/offers_accept/{offerId}/{studentId}', [AcademyAdminCourseController::class, 'acceptOffer']);
         //done
         Route::post('/offers_reject/{offerId}/{studentId}', [AcademyAdminCourseController::class, 'rejectOffer']);
+          Route::get('/addStudentToCourse/{course}/{student}', [AcademyAdminStudentController::class, 'addStudentToCourse']);
+        Route::get('/my-courses', [AcademyAdminCourseController::class, 'getMyCourses']);
     });
     Route::group(['prefix' => 'teachers'], function () {
         //done     
@@ -238,7 +240,7 @@ Route::group(['prefix' => 'academy-admin', 'middleware' => ['auth:sanctum', 'aca
         // //     
         // Route::get('/active', [AcademyAdminCourseController::class, 'activeCourses']);
         //done  
-        Route::get('/addStudentToCourse/{course}/{student}', [AcademyAdminStudentController::class, 'addStudentToCourse']);
+      
     });
     // Route::group(['prefix' => 'exams'], function () {
     //     //     
@@ -247,7 +249,6 @@ Route::group(['prefix' => 'academy-admin', 'middleware' => ['auth:sanctum', 'aca
     //     Route::delete('deleteExam/{course}', [AcademyAdminExamController::class, 'deleteExam']);
     // });
 });
-
 
 Route::group(['prefix' => 'super-admin', 'middleware' => ['auth:sanctum', 'superAdmin']], function () {
     //
