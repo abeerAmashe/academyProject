@@ -86,7 +86,7 @@ Route::group(['prefix' => 'student', 'middleware' => ['auth:sanctum', 'student']
         //done     
         Route::get('show-request', [AcademyStudentController::class, 'showRequest']);
         //done
-        Route::get('cancel-request/{academy}', [AcademyStudentController::class, 'delete']);
+        Route::delete('cancel-request/{academy}', [AcademyStudentController::class, 'delete']);
         //done    
         Route::post('feedback/{academy}', [AcademyStudentController::class, 'addFeedBack']);
     });
